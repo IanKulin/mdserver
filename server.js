@@ -9,7 +9,6 @@ const publicDirectory = 'public';
 const templateName = 'template.html';
 const hostname = '127.0.0.1';
 const port = 3000;
-const version = 'v0.01';
 
 const staticRoot = path.join(__dirname, publicDirectory);
 const templatePath = path.join(staticRoot, templateName);
@@ -33,7 +32,7 @@ function mdParser(req, res, next) {
                 if (useTemplate) {
                     // Replace placeholders with title and content using the template loaded at startup
                     const title = path.basename(mdFilePath);
-                    const templatedHtml = templateData.replace('{{title}}', title).replace('{{content}}', 
+                    const templatedHtml = templateData.replace('{{title}}', title).replace('{{content}}',
                         htmlContent);
                     res.send(templatedHtml);
                 } else {
@@ -53,7 +52,7 @@ app.use(express.static(publicDirectory));
 
 
 app.get('/', function (req, res) {
-    // apparently there's no index.html, so try index.md
+    // there's no index.html, so try index.md
     req.url = '/index.md';
     mdParser(req, res, () => { });
 });
@@ -74,7 +73,7 @@ const readFilePromise = (path) => {
 
 
 // Use a promise to read the template file then start the server
-console.log('Starting mdserver', packageJson.version);
+console.log('Starting mdserver ver', packageJson.version);
 readFilePromise(templatePath)
     .then((data) => {
         useTemplate = true;
