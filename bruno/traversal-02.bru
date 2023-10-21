@@ -1,0 +1,15 @@
+meta {
+  name: Traversal-02
+  type: http
+  seq: 6
+}
+
+get {
+  url: http://127.0.0.1:3000/public/../readme.md
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 404
+}

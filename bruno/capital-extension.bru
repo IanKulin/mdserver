@@ -1,0 +1,16 @@
+meta {
+  name: capital-extension
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://127.0.0.1:3000/test.MD
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body: contains Test.md
+}

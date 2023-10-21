@@ -1,0 +1,15 @@
+meta {
+  name: missing-md
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://127.0.0.1:3000/page.md
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 404
+}

@@ -1,0 +1,16 @@
+meta {
+  name: HTML
+  type: http
+  seq: 4
+}
+
+get {
+  url: http://127.0.0.1:3000/test.html
+  body: none
+  auth: none
+}
+
+assert {
+  res.status: eq 200
+  res.body: contains test.html
+}
