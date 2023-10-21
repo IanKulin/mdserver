@@ -5,20 +5,23 @@ const showdown = require('showdown');
 const converter = new showdown.Converter();
 
 const publicDirectory = 'public'; 
+const staticRoot = path.join(__dirname, publicDirectory);
+const templatePath = path.join(staticRoot, 'template.html'); 
 const hostname = '127.0.0.1';
 const port = 3000;
 
+let templateData = '';
+let useTemplate = false;
+
 
 function mdParser(req, res, next) {
-    if (req.url.endsWith('.md')) {
-        // If the request URL ends with .md, treat it as a Markdown file
-        const staticRoot = path.join(__dirname, publicDirectory);
+    if (req.url.endsWith('.md')) {  
+        // must be a markdown file 
         const mdFilePath = path.join(staticRoot, req.url);
       
         fs.readFile(mdFilePath, 'utf8', (err, data) => {
             if (err) {
                 console.log('err');
-                // Handle any errors (e.g., file not found)
                 res.status(404).send('File not found');
             } else {
                 // convert to HTML using showDown
@@ -27,7 +30,6 @@ function mdParser(req, res, next) {
             }
         })
     } else {
-        // For other requests, pass control to the next middleware
         next();
     }
 };
@@ -45,5 +47,16 @@ app.get('/', function(req, res){
  
 
 app.listen(port, hostname, function() {
-  console.log(`Server running at http://${hostname}:${port}/`);
+    console.log(`Reading template...`);
+    fs.readFile(templatePath, 'utf8', (err, data) => {
+        if (err) {
+            useTemplate = false;
+            console.log('No template found at', templatePath);
+        } else {
+            useTemplate = true;
+            templateData = data;
+            console.log('Template loaded from', templatePath);
+        }
+    });
+    console.log(`Server running at http://${hostname}:${port}/`);
  });
