@@ -8,7 +8,7 @@ mdserver is a node.js application using [express](https://expressjs.com/) and [s
 
 * Have node.js installed and working
 * Clone the repo
-* start with `npm start`
+* Start with `npm start`
 
 Files are only served from the `public` sub-directory, so all your HTML, CSS, and markdown (.md) files go in there. There is a set of (very simple) sample files provided.
 
