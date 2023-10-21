@@ -1,10 +1,10 @@
 const express = require("express");
-const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
 const showdown = require('showdown');
 const converter = new showdown.Converter();
- 
+
+const publicDirectory = 'public'; 
 const hostname = '127.0.0.1';
 const port = 3000;
 
@@ -12,7 +12,7 @@ const port = 3000;
 function mdParser(req, res, next) {
     if (req.url.endsWith('.md')) {
         // If the request URL ends with .md, treat it as a Markdown file
-        const staticRoot = path.join(__dirname, 'public');
+        const staticRoot = path.join(__dirname, publicDirectory);
         const mdFilePath = path.join(staticRoot, req.url);
       
         fs.readFile(mdFilePath, 'utf8', (err, data) => {
@@ -33,13 +33,12 @@ function mdParser(req, res, next) {
 };
 
 var app = express();
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
 app.use(mdParser);
-app.use(express.static('public'));
+app.use(express.static(publicDirectory));
 
 
 app.get('/', function(req, res){
+    // if there's no index.html, try index.md
     req.url = '/index.md'; 
     mdParser(req, res, () => {});
 });
