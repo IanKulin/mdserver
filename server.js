@@ -19,7 +19,7 @@ let useTemplate = false;
 
 // middleware for processing markdown files
 function mdParser(req, res, next) {
-    if (req.url.endsWith('.md')) {
+    if (req.url.toLowerCase().endsWith('.md')) {
         const mdFilePath = path.join(staticRoot, req.url);
 
         fs.readFile(mdFilePath, 'utf8', (err, data) => {
