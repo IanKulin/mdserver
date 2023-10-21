@@ -1,6 +1,7 @@
 const express = require("express");
 const fs = require('fs');
 const path = require('path');
+const packageJson = require('./package.json');
 const showdown = require('showdown');
 const converter = new showdown.Converter();
 
@@ -52,7 +53,7 @@ app.use(express.static(publicDirectory));
 
 
 app.get('/', function (req, res) {
-    // if there's no index.html, try index.md
+    // apparently there's no index.html, so try index.md
     req.url = '/index.md';
     mdParser(req, res, () => { });
 });
@@ -72,8 +73,8 @@ const readFilePromise = (path) => {
 };
 
 
-console.log('mdserver ', version);
 // Use a promise to read the template file then start the server
+console.log('Starting mdserver', packageJson.version);
 readFilePromise(templatePath)
     .then((data) => {
         useTemplate = true;
