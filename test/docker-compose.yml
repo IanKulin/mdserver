@@ -1,0 +1,8 @@
+version: '3'
+services:
+  node-app:
+    image: mdserver  # Replace with the name of your Docker image
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./mdserver:/app  # Bind mount the local directory to /app in the container

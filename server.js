@@ -7,7 +7,7 @@ const converter = new showdown.Converter();
 
 const publicDirectory = 'public';
 const templateName = 'template.html';
-const hostname = '127.0.0.1';
+const hostname = '0.0.0.0';
 const port = 3000;
 
 const staticRoot = path.join(__dirname, publicDirectory);
