@@ -46,7 +46,7 @@ function mdParser(req, res, next) {
 };
 
 
-var app = express();
+const app = express();
 app.use(mdParser);
 app.use(express.static(publicDirectory));
 
