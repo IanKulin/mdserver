@@ -24,8 +24,13 @@ function mdParser(req, res, next) {
 
         fs.readFile(mdFilePath, 'utf8', (err, data) => {
             if (err) {
-                console.log('err');
-                res.status(404).send('File not found');
+                if (err.code === 'ENOENT') {
+                    res.status(404).send('File not found');
+                } else {
+                    // Other error types
+                    console.error('Error reading file:', err);
+                    res.status(500).send('Internal Server Error');
+                }
             } else {
                 const htmlContent = converter.makeHtml(data);
 
