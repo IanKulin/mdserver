@@ -5,7 +5,7 @@ FROM node:20-alpine
 WORKDIR /usr/src/app
 
 # Copy package.json and package-lock.json to the working directory
-COPY package*.json ./
+COPY package*.json .
 
 RUN npm install
 # If you are building your code for production
@@ -15,8 +15,6 @@ RUN npm install
 COPY ./server.js .
 COPY ./LICENSE .
 COPY ./readme.md .
-
-
 
 # Expose the port that the Node.js app will listen on
 EXPOSE 3000
