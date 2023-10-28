@@ -2,6 +2,7 @@ version: '3'
 services:
   node-app:
     image: iankulin/mdserver:latest
+    container_name: mdserver
     ports:
       - "3000:3000"
     volumes:
