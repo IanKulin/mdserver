@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 const packageJson = require('./package.json');
 const showdown = require('showdown');
-const converter = new showdown.Converter();
+const converter = new showdown.Converter({metadata: true});
 
 const publicDirectory = 'public';
 const templateName = 'template.html';
@@ -54,16 +54,21 @@ function mdParser(req, res, next) {
                     res.status(500).send('Internal Server Error');
                 }
             } else {
-                const htmlContent = converter.makeHtml(data);
+                const rawHtml = converter.makeHtml(data);
 
                 if (useTemplate) {
                     // Replace placeholders with title and content using the template loaded at startup
-                    const title = path.basename(mdFilePath);
+                    let title = converter.getMetadata().title;
+                    console.log(title);
+                    if (title === undefined) {
+                        title = path.basename(mdFilePath);
+                    }
+                    
                     const templatedHtml = templateData.replace('{{title}}', title).replace('{{content}}',
-                        htmlContent);
+                        rawHtml);
                     res.send(templatedHtml);
                 } else {
-                    res.send(htmlContent);
+                    res.send(rawHtml);
                 }
             }
         })
