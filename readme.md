@@ -2,7 +2,7 @@
 
 A lightweight web server to serve a directory of markdown files, converting them to html on the fly. Non-markdown files are served directly.
 
-**mdserver** is a node.js application using [express](https://expressjs.com/) and [showdown](https://showdownjs.com/).
+**mdserver** is a node.js application using [Express](https://expressjs.com/) and [Showdown](https://showdownjs.com/).
 
 ## Install
 
@@ -16,15 +16,27 @@ or, with Docker
 
 ## Usage
 
-Files are only served from the `public` sub-directory, so all your HTML, CSS, and markdown (.md) files go in there. There are some (very simple) sample files provided in the repo.
+Files are only served from the `public` sub-directory, so all your HTML, CSS, and markdown (.md) files go in there. There are a couple of (very simple) sample files provided in the repo.
 
 The filename `template.html` is a magic one. This is the html that is used to wrap any converted markdown to ensure it is valid html. This file should contain placeholders for `{{title}}` and `{{content}}`. If `template.html` is not found, the converted markdown is sent as not-quite-correct HTML - which mostly works fine in current browsers.
 
-A welcome message appears at the root route, to get rid of it, ensure you have an `index.html` or `index.md` file in the public directory.
+New instalations will have a welcome message appear at the root route, to get rid of it, ensure you have an `index.html` or `index.md` file in the public directory.
+
+Since **mdserver** uses [Showdown](https://showdownjs.com/) for the markdown -> HTML conversion, all the [Showdown syntax](https://showdownjs.com/docs/markdown-syntax/) features are supported. This includes adding the title for the output HTML page using Frontmatter style. If you are using a template that includes the `{{title}}` directive, the following markdown would be output as HTML with the title 'Test File'
+```
+---
+title: Test File
+---
+
+# Test.md
+
+* A sample mark down file
+```
+The metadata included in the markdown like this is removed before the conversion to HTML.
 
 ## Contributions
 
-Are very welcome, but I'd have to learn how to deal with a pull request ☺
+Are welcome, but I'd have to learn how to deal with a pull request ☺
 
 
 ## Similar projects
