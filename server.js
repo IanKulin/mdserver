@@ -6,6 +6,8 @@ const packageJson = require('./package.json');
 const mdParser = require('./mdParser');
 
 const config = require('./config');
+const hostname = '0.0.0.0';
+const port = 3000;
 
 
 const app = express();
@@ -47,7 +49,7 @@ readFilePromise(config.templatePath)
         console.log('No template found at', config.templatePath);
     })
     .finally(() => {
-        app.listen(config.port, config.hostname, () => {
-            console.log(`Server running at http://${config.hostname}:${config.port}/`);
+        app.listen(port, hostname, () => {
+            console.log(`Server running at http://${hostname}:${port}/`);
         });
     });
