@@ -19,6 +19,14 @@ is present, it will be used as a template to enclose the markdown</li>
 &lt;/body&gt;<br>&lt;/html&gt;<br></code><p>(To remove this message, ensure you have a <code>
 public/index.md</code> or <code>public/index.html</code> file installed)</p></main></body></html>`
 
+const templateName = 'template.html';
+const publicDirectory = 'public';
+const staticRoot = path.join(__dirname, publicDirectory);
+const templatePath = path.join(staticRoot, templateName);
+
+let templateData = '';
+let useTemplate = false;
+
 
 async function sendResponse(res, filePath, data) {
     const rawHtml = converter.makeHtml(data);
@@ -26,9 +34,9 @@ async function sendResponse(res, filePath, data) {
     if (title === undefined) {
         title = path.basename(filePath);
     }
-    if (config.useTemplate) {
+    if (useTemplate) {
         // Replace placeholders with title and content using the template loaded at startup
-        const templatedHtml = config.templateData.replace('{{title}}', title).replace('{{content}}', rawHtml);
+        const templatedHtml = templateData.replace('{{title}}', title).replace('{{content}}', rawHtml);
         res.status(200).send(templatedHtml);
     }
     else {
@@ -44,7 +52,7 @@ async function mdParser(req, res, next) {
         return;
     }
 
-    const mdFilePath = path.join(config.staticRoot, req.url);
+    const mdFilePath = path.join(staticRoot, req.url);
     try {
         const data = await fs.readFile(mdFilePath, 'utf8');
         await sendResponse(res, mdFilePath, data);
@@ -64,5 +72,21 @@ async function mdParser(req, res, next) {
 
 };
 
+async function loadTemplate() {
+    try {
+        const data = await fs.readFile(templatePath, 'utf8');
+        useTemplate = true;
+        templateData = data;
+        console.log('Template loaded from', templatePath);
+    } catch (err) {
+        useTemplate = false;
+        console.log('No template found at', templatePath);
+    }
+}
 
-module.exports = mdParser;
+
+module.exports = {
+    mdParser,
+    loadTemplate,
+    publicDirectory
+};
