@@ -19,6 +19,24 @@ is present, it will be used as a template to enclose the markdown</li>
 &lt;/body&gt;<br>&lt;/html&gt;<br></code><p>(To remove this message, ensure you have a <code>
 public/index.md</code> or <code>public/index.html</code> file installed)</p></main></body></html>`
 
+
+async function sendResponse(res, filePath, data) {
+    const rawHtml = converter.makeHtml(data);
+    let title = converter.getMetadata().title;
+    if (title === undefined) {
+        title = path.basename(filePath);
+    }
+    if (config.useTemplate) {
+        // Replace placeholders with title and content using the template loaded at startup
+        const templatedHtml = config.templateData.replace('{{title}}', title).replace('{{content}}', rawHtml);
+        res.status(200).send(templatedHtml);
+    }
+    else {
+        res.status(200).send(rawHtml);
+    }
+}
+
+
 // middleware for processing markdown files
 function mdParser(req, res, next) {
     if (req.url.toLowerCase().endsWith('.md')) {
@@ -42,22 +60,7 @@ function mdParser(req, res, next) {
                     res.status(500).send('Internal Server Error');
                 }
             } else {
-                const rawHtml = converter.makeHtml(data);
-
-                if (config.useTemplate) {
-                    // Replace placeholders with title and content using the template loaded at startup
-                    let title = converter.getMetadata().title;
-                    console.log(title);
-                    if (title === undefined) {
-                        title = path.basename(mdFilePath);
-                    }
-                    
-                    const templatedHtml = config.templateData.replace('{{title}}', title).replace('{{content}}',
-                        rawHtml);
-                    res.send(templatedHtml);
-                } else {
-                    res.send(rawHtml);
-                }
+                sendResponse(res, mdFilePath, data);
             }
         })
     } else {
