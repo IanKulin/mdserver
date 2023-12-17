@@ -3,8 +3,6 @@ const path = require('path');
 const showdown = require('showdown');
 const converter = new showdown.Converter({metadata: true});
 
-const config = require('./config');
-
 const welcome_html = `
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>mdserver - welcome</title></head>
 <body><main><p>You've successfully installed <strong>mdserver</strong>.</p><p>To use:</p><ul>
