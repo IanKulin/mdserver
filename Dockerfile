@@ -15,6 +15,7 @@ RUN npm install
 COPY ./server.js .
 COPY ./LICENSE .
 COPY ./readme.md .
+COPY ./mdparser.js .
 
 # Expose the port that the Node.js app will listen on
 EXPOSE 3000

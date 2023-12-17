@@ -3,7 +3,10 @@
         "capitalised",
         "emsp",
         "ensp",
+        "Frontmatter",
         "iankulin",
-        "mdserver"
+        "mdparser",
+        "mdserver",
+        "sintaxi"
     ]
 }
