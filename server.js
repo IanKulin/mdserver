@@ -1,7 +1,7 @@
 const express = require("express");
 const packageJson = require('./package.json');
 
-const { mdParser, loadTemplate, publicDirectory } = require('./mdParser');
+const { mdParser, loadTemplate, publicDirectory } = require('./mdparser');
 
 const hostname = '0.0.0.0';
 const port = 3000;
