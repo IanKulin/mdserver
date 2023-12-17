@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs').promises;
 const path = require('path');
 const showdown = require('showdown');
 const converter = new showdown.Converter({metadata: true});
@@ -37,35 +37,32 @@ async function sendResponse(res, filePath, data) {
 }
 
 
-// middleware for processing markdown files
-function mdParser(req, res, next) {
-    if (req.url.toLowerCase().endsWith('.md')) {
-        const mdFilePath = path.join(config.staticRoot, req.url);
-
-        fs.readFile(mdFilePath, 'utf8', (err, data) => {
-            if (err) {
-                if (err.code === 'ENOENT') {
-                    // if we were looking for /index.md and it's not there, it's probably a 
-                    // fresh install so we will return the welcome message
-                    if (req.url === '/index.md') {
-                        res.status(200).send(welcome_html);
-                        return;
-                    } else {
-                        res.status(404).send('File not found');
-                    }
-                    
-                } else {
-                    // Other error types
-                    console.error('Error reading file:', err);
-                    res.status(500).send('Internal Server Error');
-                }
-            } else {
-                sendResponse(res, mdFilePath, data);
-            }
-        })
-    } else {
+async function mdParser(req, res, next) {
+    if (!req.url.toLowerCase().endsWith('.md')) {
+        // not a markdown file, so pass on to the next handler
         next();
+        return;
     }
+
+    const mdFilePath = path.join(config.staticRoot, req.url);
+    try {
+        const data = await fs.readFile(mdFilePath, 'utf8');
+        await sendResponse(res, mdFilePath, data);
+    } catch (err) {
+        if (err.code === 'ENOENT') {
+            if (req.url === '/index.md') {
+                // no index.md, so serve the welcome page
+                res.status(200).send(welcome_html);
+            } else {
+                res.status(404).send('File not found: '+mdFilePath+'<br>'+err);
+            }
+        } else {
+            console.error('Error reading file:', mdFilePath, err);
+            res.status(500).send('Error reading file: '+mdFilePath+'<br>'+err);
+        }
+    }
+
 };
+
 
 module.exports = mdParser;
