@@ -8,6 +8,7 @@
     "iankulin",
     "mdparser",
     "mdserver",
+    "multiarch",
     "sintaxi"
   ]
 }
