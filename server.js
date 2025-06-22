@@ -21,9 +21,14 @@ app.get("/", function (req, res) {
 async function startServer() {
   console.log("Starting mdserver ver", packageJson.version);
   await loadTemplate();
-  app.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
-  });
+  if (process.env.NODE_ENV !== "test") {
+    app.listen(port, hostname, () => {
+      console.log(`Server running at http://${hostname}:${port}/`);
+    });
+  }
 }
 
 startServer();
+
+// Export app for testing
+export { app };
