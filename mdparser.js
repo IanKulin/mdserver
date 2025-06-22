@@ -20,6 +20,7 @@ public/index.md</code> or <code>public/index.html</code> file installed)</p></ma
 
 const templateName = "template.html";
 const publicDirectory = "public";
+const MAX_FILE_SIZE = 1024 * 1024; // 1MB
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const staticRoot = path.join(__dirname, publicDirectory);
 const templatePath = path.join(staticRoot, templateName);
@@ -51,12 +52,20 @@ async function mdParser(req, res, next) {
     return;
   }
 
-  const mdFilePath = path.resolve(staticRoot, path.normalize(req.url.substring(1)));
+  const mdFilePath = path.resolve(
+    staticRoot,
+    path.normalize(req.url.substring(1)),
+  );
   if (!mdFilePath.startsWith(staticRoot)) {
-    res.status(403).send('Access denied');
+    res.status(403).send("Access denied");
     return;
   }
   try {
+    const stats = await fs.promises.stat(mdFilePath);
+    if (stats.size > MAX_FILE_SIZE) {
+      res.status(413).send("File too large");
+      return;
+    }
     const data = await fs.promises.readFile(mdFilePath, "utf8");
     await sendResponse(res, mdFilePath, data);
   } catch (err) {
@@ -65,11 +74,11 @@ async function mdParser(req, res, next) {
         // no index.md, so serve the welcome page
         res.status(200).send(welcome_html);
       } else {
-        res.status(404).send("File not found: " + mdFilePath + "<br>" + err);
+        res.status(404).send("File not found");
       }
     } else {
       console.error("Error reading file:", mdFilePath, err);
-      res.status(500).send("Error reading file: " + mdFilePath + "<br>" + err);
+      res.status(500).send("Internal server error");
     }
   }
 }
