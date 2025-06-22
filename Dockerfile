@@ -1,5 +1,5 @@
 # Use an official Node.js runtime as the base image
-FROM node:20-alpine
+FROM node:24-alpine
 
 # Set the working directory in the container
 WORKDIR /usr/src/app
@@ -14,7 +14,7 @@ RUN npm install
 # Copy the rest of the application source code to the container
 COPY ./server.js .
 COPY ./LICENSE .
-COPY ./readme.md .
+COPY ./README.md .
 COPY ./mdparser.js .
 
 # Expose the port that the Node.js app will listen on

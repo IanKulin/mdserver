@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node server.js)",
+      "Bash(pkill:*)",
+      "Bash(npx eslint:*)",
+      "Bash(node:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm test)"
+    ],
+    "deny": []
+  }
+}

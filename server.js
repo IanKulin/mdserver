@@ -1,30 +1,29 @@
-const express = require("express");
-const packageJson = require('./package.json');
+import express from "express";
+import fs from "fs";
 
-const { mdParser, loadTemplate, publicDirectory } = require('./mdparser');
+import { mdParser, loadTemplate, publicDirectory } from "./mdparser.js";
 
-const hostname = '0.0.0.0';
+const packageJson = JSON.parse(fs.readFileSync("./package.json", "utf8"));
+
+const hostname = "0.0.0.0";
 const port = 3000;
-
 
 const app = express();
 app.use(mdParser);
 app.use(express.static(publicDirectory));
 
-
-app.get('/', function (req, res) {
-    // there's no index.html, so try index.md
-    req.url = '/index.md';
-    mdParser(req, res, () => { });
+app.get("/", function (req, res) {
+  // there's no index.html, so try index.md
+  req.url = "/index.md";
+  mdParser(req, res, () => {});
 });
 
-
 async function startServer() {
-    console.log('Starting mdserver ver', packageJson.version);
-    await loadTemplate(); 
-    app.listen(port, hostname, () => {
-        console.log(`Server running at http://${hostname}:${port}/`);
-    });
+  console.log("Starting mdserver ver", packageJson.version);
+  await loadTemplate();
+  app.listen(port, hostname, () => {
+    console.log(`Server running at http://${hostname}:${port}/`);
+  });
 }
 
 startServer();

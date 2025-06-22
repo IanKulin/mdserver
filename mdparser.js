@@ -1,7 +1,8 @@
-const fs = require('fs').promises;
-const path = require('path');
-const showdown = require('showdown');
-const converter = new showdown.Converter({metadata: true});
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import showdown from "showdown";
+const converter = new showdown.Converter({ metadata: true });
 
 const welcome_html = `
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>mdserver - welcome</title></head>
@@ -15,76 +16,83 @@ is present, it will be used as a template to enclose the markdown</li>
 &lt;head&gt;<br>&ensp; &lt;meta charset="UTF-8"&gt;<br>&ensp; &lt;title&gt;{{title}}&lt;/title&gt;<br>
 &lt;/head&gt;<br>&lt;body&gt;<br>&ensp; &lt;main&gt;<br>&emsp; {{content}}<br>&ensp; &lt;/main&gt;<br>
 &lt;/body&gt;<br>&lt;/html&gt;<br></code><p>(To remove this message, ensure you have a <code>
-public/index.md</code> or <code>public/index.html</code> file installed)</p></main></body></html>`
+public/index.md</code> or <code>public/index.html</code> file installed)</p></main></body></html>`;
 
-const templateName = 'template.html';
-const publicDirectory = 'public';
+const templateName = "template.html";
+const publicDirectory = "public";
+const MAX_FILE_SIZE = 1024 * 1024; // 1MB
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const staticRoot = path.join(__dirname, publicDirectory);
 const templatePath = path.join(staticRoot, templateName);
 
-let templateData = '';
+let templateData = "";
 let useTemplate = false;
 
-
 async function sendResponse(res, filePath, data) {
-    const rawHtml = converter.makeHtml(data);
-    let title = converter.getMetadata().title;
-    if (title === undefined) {
-        title = path.basename(filePath);
-    }
-    if (useTemplate) {
-        // Replace placeholders with title and content using the template loaded at startup
-        const templatedHtml = templateData.replace('{{title}}', title).replace('{{content}}', rawHtml);
-        res.status(200).send(templatedHtml);
-    }
-    else {
-        res.status(200).send(rawHtml);
-    }
+  const rawHtml = converter.makeHtml(data);
+  let title = converter.getMetadata().title;
+  if (title === undefined) {
+    title = path.basename(filePath);
+  }
+  if (useTemplate) {
+    // Replace placeholders with title and content using the template loaded at startup
+    const templatedHtml = templateData
+      .replace("{{title}}", title)
+      .replace("{{content}}", rawHtml);
+    res.status(200).send(templatedHtml);
+  } else {
+    res.status(200).send(rawHtml);
+  }
 }
-
 
 async function mdParser(req, res, next) {
-    if (!req.url.toLowerCase().endsWith('.md')) {
-        // not a markdown file, so pass on to the next handler
-        next();
-        return;
-    }
+  if (!req.url.toLowerCase().endsWith(".md")) {
+    // not a markdown file, so pass on to the next handler
+    next();
+    return;
+  }
 
-    const mdFilePath = path.join(staticRoot, req.url);
-    try {
-        const data = await fs.readFile(mdFilePath, 'utf8');
-        await sendResponse(res, mdFilePath, data);
-    } catch (err) {
-        if (err.code === 'ENOENT') {
-            if (req.url === '/index.md') {
-                // no index.md, so serve the welcome page
-                res.status(200).send(welcome_html);
-            } else {
-                res.status(404).send('File not found: '+mdFilePath+'<br>'+err);
-            }
-        } else {
-            console.error('Error reading file:', mdFilePath, err);
-            res.status(500).send('Error reading file: '+mdFilePath+'<br>'+err);
-        }
+  const mdFilePath = path.resolve(
+    staticRoot,
+    path.normalize(req.url.substring(1)),
+  );
+  if (!mdFilePath.startsWith(staticRoot)) {
+    res.status(403).send("Access denied");
+    return;
+  }
+  try {
+    const stats = await fs.promises.stat(mdFilePath);
+    if (stats.size > MAX_FILE_SIZE) {
+      res.status(413).send("File too large");
+      return;
     }
-
-};
-
-async function loadTemplate() {
-    try {
-        const data = await fs.readFile(templatePath, 'utf8');
-        useTemplate = true;
-        templateData = data;
-        console.log('Template loaded from', templatePath);
-    } catch (err) {
-        useTemplate = false;
-        console.log('No template found at', templatePath);
+    const data = await fs.promises.readFile(mdFilePath, "utf8");
+    await sendResponse(res, mdFilePath, data);
+  } catch (err) {
+    if (err.code === "ENOENT") {
+      if (req.url === "/index.md") {
+        // no index.md, so serve the welcome page
+        res.status(200).send(welcome_html);
+      } else {
+        res.status(404).send("File not found");
+      }
+    } else {
+      console.error("Error reading file:", mdFilePath, err);
+      res.status(500).send("Internal server error");
     }
+  }
 }
 
+async function loadTemplate() {
+  try {
+    const data = await fs.promises.readFile(templatePath, "utf8");
+    useTemplate = true;
+    templateData = data;
+    console.log("Template loaded from", templatePath);
+  } catch {
+    useTemplate = false;
+    console.log("No template found at", templatePath);
+  }
+}
 
-module.exports = {
-    mdParser,
-    loadTemplate,
-    publicDirectory
-};
+export { mdParser, loadTemplate, publicDirectory };

@@ -1,15 +1,26 @@
 {
   "name": "mdserver",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "",
+  "type": "module",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --test test/**/*.test.js",
+    "lint": "npx eslint *.js",
+    "format": "npx prettier *.js --write"
   },
   "author": "iankulin",
   "license": "GPL-3.0",
   "dependencies": {
     "express": "^4.18.2",
     "showdown": "^2.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.29.0",
+    "eslint": "^9.29.0",
+    "eslint-config-prettier": "^10.1.5",
+    "globals": "^16.2.0",
+    "prettier": "^3.5.3"
   }
 }
