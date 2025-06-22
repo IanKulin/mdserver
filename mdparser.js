@@ -51,7 +51,11 @@ async function mdParser(req, res, next) {
     return;
   }
 
-  const mdFilePath = path.join(staticRoot, req.url);
+  const mdFilePath = path.resolve(staticRoot, path.normalize(req.url.substring(1)));
+  if (!mdFilePath.startsWith(staticRoot)) {
+    res.status(403).send('Access denied');
+    return;
+  }
   try {
     const data = await fs.promises.readFile(mdFilePath, "utf8");
     await sendResponse(res, mdFilePath, data);
