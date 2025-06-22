@@ -1,4 +1,3 @@
-version: '3'
 services:
   node-app:
     image: iankulin/mdserver:latest
