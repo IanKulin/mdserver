@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(node server.js)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(npx eslint:*)"
     ],
     "deny": []
   }
