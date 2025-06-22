@@ -44,3 +44,7 @@ The metadata included in the markdown like this is removed before the conversion
 If you are looking for something more powerful that serves up markdown but has a heap of other powers - such as other template languages and partials, you might be happier with [Harp](https://harpjs.com/) from [sintaxi](https://github.com/sintaxi/harp).
 
 And of course, the performant way to serve markdown as html is a static site generator, of which there are [many](https://github.com/myles/awesome-static-generators).
+
+## Build
+
+
