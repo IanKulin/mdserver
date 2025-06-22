@@ -1,6 +1,7 @@
-const fs = require('fs').promises;
-const path = require('path');
-const showdown = require('showdown');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import showdown from 'showdown';
 const converter = new showdown.Converter({metadata: true});
 
 const welcome_html = `
@@ -19,6 +20,7 @@ public/index.md</code> or <code>public/index.html</code> file installed)</p></ma
 
 const templateName = 'template.html';
 const publicDirectory = 'public';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const staticRoot = path.join(__dirname, publicDirectory);
 const templatePath = path.join(staticRoot, templateName);
 
@@ -52,7 +54,7 @@ async function mdParser(req, res, next) {
 
     const mdFilePath = path.join(staticRoot, req.url);
     try {
-        const data = await fs.readFile(mdFilePath, 'utf8');
+        const data = await fs.promises.readFile(mdFilePath, 'utf8');
         await sendResponse(res, mdFilePath, data);
     } catch (err) {
         if (err.code === 'ENOENT') {
@@ -72,7 +74,7 @@ async function mdParser(req, res, next) {
 
 async function loadTemplate() {
     try {
-        const data = await fs.readFile(templatePath, 'utf8');
+        const data = await fs.promises.readFile(templatePath, 'utf8');
         useTemplate = true;
         templateData = data;
         console.log('Template loaded from', templatePath);
@@ -83,8 +85,4 @@ async function loadTemplate() {
 }
 
 
-module.exports = {
-    mdParser,
-    loadTemplate,
-    publicDirectory
-};
+export { mdParser, loadTemplate, publicDirectory };

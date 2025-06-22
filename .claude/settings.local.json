@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node server.js)",
+      "Bash(pkill:*)"
+    ],
+    "deny": []
+  }
+}

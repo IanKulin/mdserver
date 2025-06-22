@@ -34,9 +34,9 @@ title: Test File
 ```
 The metadata included in the markdown like this is removed before the conversion to HTML.
 
-## Contributions
+## Changelog
 
-Are welcome.
+0.2.3 - +ESM
 
 
 ## Similar projects

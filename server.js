@@ -1,7 +1,9 @@
-const express = require("express");
-const packageJson = require('./package.json');
+import express from "express";
+import fs from 'fs';
 
-const { mdParser, loadTemplate, publicDirectory } = require('./mdparser');
+import { mdParser, loadTemplate, publicDirectory } from './mdparser.js';
+
+const packageJson = JSON.parse(fs.readFileSync('./package.json', 'utf8'));
 
 const hostname = '0.0.0.0';
 const port = 3000;
