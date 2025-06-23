@@ -1,8 +1,25 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import showdown from "showdown";
-const converter = new showdown.Converter({ metadata: true });
+import MarkdownIt from "markdown-it";
+import frontMatter from "markdown-it-front-matter";
+
+const md = new MarkdownIt();
+let frontMatterData = {};
+md.use(frontMatter, (fm) => {
+  frontMatterData = parseFrontMatter(fm);
+});
+
+function parseFrontMatter(fm) {
+  const metadata = {};
+  fm.split("\n").forEach((line) => {
+    const match = line.match(/^(\w+):\s*(.+)$/);
+    if (match) {
+      metadata[match[1]] = match[2];
+    }
+  });
+  return metadata;
+}
 
 const welcome_html = `
 <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>mdserver - welcome</title></head>
@@ -29,8 +46,9 @@ let templateData = "";
 let useTemplate = false;
 
 async function sendResponse(res, filePath, data) {
-  const rawHtml = converter.makeHtml(data);
-  let title = converter.getMetadata().title;
+  frontMatterData = {}; // Reset before parsing
+  const rawHtml = md.render(data);
+  let title = frontMatterData.title;
   if (title === undefined) {
     title = path.basename(filePath);
   }
