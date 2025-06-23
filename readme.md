@@ -36,7 +36,7 @@ The metadata included in the markdown like this is removed before the conversion
 
 ## Changelog
 
-0.2.3 - +ESM, security fixes, eslint
+0.2.3 - +ESM, security fixes, eslint  
 0.3.0 - Migrated from Showdown to markdown-it for markdown translation
 
 ## Similar projects
