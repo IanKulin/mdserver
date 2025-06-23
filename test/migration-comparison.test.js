@@ -11,7 +11,7 @@ const htmlDiffer = new HtmlDiffer({
   ignoreDuplicateAttributes: false
 });
 
-describe('Migration Comparison Tests (for future use)', () => {
+describe('Markdown-it Output Validation Tests', () => {
   // Helper function to normalize HTML for comparison
   function normalizeHtml(html) {
     return html
@@ -77,55 +77,62 @@ Back to regular text.`
     }
   ];
 
-  describe('Showdown baseline capture', () => {
+  describe('Current markdown-it output validation', () => {
     testCases.forEach(({ name, markdown }) => {
-      test(`capture showdown output: ${name}`, async () => {
-        const Showdown = await import('showdown');
-        const converter = new Showdown.default.Converter();
-        const html = converter.makeHtml(markdown);
+      test(`validate markdown-it output: ${name}`, async () => {
+        const MarkdownIt = (await import('markdown-it')).default;
+        const md = new MarkdownIt();
+        const html = md.render(markdown);
         
-        // Store this as our baseline for future comparison
-        console.log(`\n=== SHOWDOWN BASELINE: ${name} ===`);
+        // Log current output for reference
+        console.log(`\n=== MARKDOWN-IT OUTPUT: ${name} ===`);
         console.log('Input markdown:', JSON.stringify(markdown));
         console.log('Output HTML:', html);
-        console.log('=== END BASELINE ===\n');
+        console.log('=== END OUTPUT ===\n');
         
         // Basic validation that we got HTML output
         assert.ok(html.length > 0, 'Should produce HTML output');
         assert.ok(typeof html === 'string', 'Should return string');
+        
+        // Additional validation based on content type
+        if (name.includes('headers')) {
+          assert.ok(html.includes('<h1>'), 'Should contain h1 tag');
+          assert.ok(html.includes('<h2>'), 'Should contain h2 tag');
+        }
+        if (name.includes('emphasis')) {
+          assert.ok(html.includes('<strong>'), 'Should contain strong tag');
+          assert.ok(html.includes('<em>'), 'Should contain em tag');
+        }
+        if (name.includes('lists')) {
+          assert.ok(html.includes('<ul>'), 'Should contain ul tag');
+          assert.ok(html.includes('<ol>'), 'Should contain ol tag');
+        }
+        if (name.includes('code')) {
+          assert.ok(html.includes('<code>'), 'Should contain code tag');
+        }
+        if (name.includes('links')) {
+          assert.ok(html.includes('<a href='), 'Should contain links');
+        }
       });
     });
   });
 
-  // These tests will be used after migration to markdown-it
-  describe('Migration validation (SKIP until after migration)', () => {
+  describe('Consistency validation across test runs', () => {
     testCases.forEach(({ name, markdown }) => {
-      test.skip(`compare engines: ${name}`, async () => {
-        // This test is skipped until after migration
-        // After migration, un-skip and implement markdown-it comparison
+      test(`consistent output for: ${name}`, async () => {
+        const MarkdownIt = (await import('markdown-it')).default;
+        const md1 = new MarkdownIt();
+        const md2 = new MarkdownIt();
         
-        // Example of what this will look like:
-        // const Showdown = await import('showdown');
-        // const MarkdownIt = await import('markdown-it');
-        // 
-        // const showdownConverter = new Showdown.Converter();
-        // const markdownIt = new MarkdownIt();
-        // 
-        // const showdownHtml = showdownConverter.makeHtml(markdown);
-        // const markdownItHtml = markdownIt.render(markdown);
-        // 
-        // const isEquivalent = compareHtml(showdownHtml, markdownItHtml, name);
-        // 
-        // if (!isEquivalent) {
-        //   console.log(`\nDifferences found in ${name}:`);
-        //   console.log('Showdown:', showdownHtml);
-        //   console.log('Markdown-it:', markdownItHtml);
-        // }
-        // 
-        // // For now, we'll allow differences but log them
-        // // Later, decide if differences are acceptable
+        const html1 = md1.render(markdown);
+        const html2 = md2.render(markdown);
         
-        assert.ok(true, 'Placeholder for future migration validation');
+        // Same input should always produce same output
+        assert.strictEqual(html1, html2, `Output should be consistent for ${name}`);
+        
+        // Output should be deterministic
+        const html3 = md1.render(markdown);
+        assert.strictEqual(html1, html3, `Multiple renders should produce identical output for ${name}`);
       });
     });
   });
@@ -141,24 +148,84 @@ date: 2024-01-01
 
 This is the content after front-matter.`;
 
-    test('showdown front-matter baseline', async () => {
-      const Showdown = await import('showdown');
-      const converter = new Showdown.default.Converter();
-      const html = converter.makeHtml(frontMatterTest);
+    test('markdown-it front-matter handling', async () => {
+      const MarkdownIt = (await import('markdown-it')).default;
+      const frontMatter = (await import('markdown-it-front-matter')).default;
       
-      console.log('\n=== FRONT-MATTER BASELINE ===');
+      const md = new MarkdownIt();
+      let frontMatterData = {};
+      
+      function parseFrontMatter(fm) {
+        const metadata = {};
+        fm.split('\n').forEach(line => {
+          const match = line.match(/^(\w+):\s*(.+)$/);
+          if (match) {
+            metadata[match[1]] = match[2];
+          }
+        });
+        return metadata;
+      }
+      
+      md.use(frontMatter, (fm) => {
+        frontMatterData = parseFrontMatter(fm);
+      });
+      
+      const html = md.render(frontMatterTest);
+      
+      console.log('\n=== FRONT-MATTER CURRENT ===');
       console.log('Input:', JSON.stringify(frontMatterTest));
-      console.log('Showdown output:', html);
-      console.log('=== END FRONT-MATTER BASELINE ===\n');
+      console.log('Markdown-it output:', html);
+      console.log('Extracted metadata:', frontMatterData);
+      console.log('=== END FRONT-MATTER CURRENT ===\n');
       
-      // Showdown will convert front-matter as regular content
-      assert.ok(html.includes('title:'), 'Showdown should pass through front-matter');
+      // Validate front-matter extraction
+      assert.strictEqual(frontMatterData.title, 'Test Document', 'Should extract title');
+      assert.strictEqual(frontMatterData.author, 'Test Author', 'Should extract author');
+      assert.strictEqual(frontMatterData.date, '2024-01-01', 'Should extract date');
+      
+      // Validate HTML output
+      assert.ok(!html.includes('title: Test Document'), 'Front-matter should be removed from HTML');
+      assert.ok(html.includes('<h1>Main Content</h1>'), 'Content should be rendered as HTML');
+      assert.ok(html.includes('This is the content after front-matter'), 'Body content should be present');
     });
 
-    test.skip('front-matter migration validation', () => {
-      // This will be implemented after migration
-      // Will test that front-matter is properly handled by new engine
-      assert.ok(true, 'Placeholder for front-matter migration validation');
+    test('front-matter consistency validation', async () => {
+      // Test that front-matter processing is consistent across multiple runs
+      const MarkdownIt = (await import('markdown-it')).default;
+      const frontMatter = (await import('markdown-it-front-matter')).default;
+      
+      const md = new MarkdownIt();
+      let metadata1 = {};
+      let metadata2 = {};
+      
+      function parseFrontMatter(fm) {
+        const metadata = {};
+        fm.split('\n').forEach(line => {
+          const match = line.match(/^(\w+):\s*(.+)$/);
+          if (match) {
+            metadata[match[1]] = match[2];
+          }
+        });
+        return metadata;
+      }
+      
+      md.use(frontMatter, (fm) => {
+        metadata1 = parseFrontMatter(fm);
+      });
+      
+      const html1 = md.render(frontMatterTest);
+      
+      // Reset and parse again  
+      const md2 = new MarkdownIt();
+      md2.use(frontMatter, (fm) => {
+        metadata2 = parseFrontMatter(fm);
+      });
+      
+      const html2 = md2.render(frontMatterTest);
+      
+      // Should be consistent
+      assert.deepStrictEqual(metadata1, metadata2, 'Metadata extraction should be consistent');
+      assert.strictEqual(html1, html2, 'HTML output should be consistent');
     });
   });
 });

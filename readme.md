@@ -2,7 +2,7 @@
 
 A lightweight web server to serve a directory of markdown files, converting them to html on the fly. Non-markdown files are served directly.
 
-**mdserver** is a node.js application using [Express](https://expressjs.com/) and [Showdown](https://showdownjs.com/).
+**mdserver** is a node.js application using [Express](https://expressjs.com/) and [markdown-it](https://markdown-it.github.io/).
 
 ## Install
 
@@ -22,7 +22,7 @@ The filename `template.html` is a magic one. This is the html that is used to wr
 
 New installations will have a welcome message appear at the root route, to get rid of it, ensure you have an `index.html` or `index.md` file in the public directory.
 
-Since **mdserver** uses [Showdown](https://showdownjs.com/) for the markdown -> HTML conversion, all the [Showdown syntax](https://showdownjs.com/docs/markdown-syntax/) features are supported. This includes adding the title for the output HTML page using Frontmatter style. If you are using a template that includes the `{{title}}` directive, the following markdown would be output as HTML with the title 'Test File'
+Since **mdserver** uses [markdown-it](https://markdown-it.github.io/) for the markdown -> HTML conversion, all [CommonMark](https://commonmark.org/) features are supported. This includes adding the title for the output HTML page using Frontmatter style. If you are using a template that includes the `{{title}}` directive, the following markdown would be output as HTML with the title 'Test File'
 ```
 ---
 title: Test File
@@ -37,6 +37,7 @@ The metadata included in the markdown like this is removed before the conversion
 ## Changelog
 
 0.2.3 - +ESM, security fixes, eslint
+0.3.0 - Migrated from Showdown to markdown-it for markdown translation
 
 
 ## Similar projects
