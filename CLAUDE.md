@@ -8,6 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm test` - Run all tests using Node.js built-in test runner
 - `npm run lint` - Run ESLint on all JavaScript files
 - `npm run format` - Format code with Prettier
+- `npm audit` - Check there are no known CVEs for the packages used
 
 ## Testing
 
