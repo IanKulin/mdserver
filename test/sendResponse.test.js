@@ -1,4 +1,4 @@
-import { test, describe, beforeEach, mock } from 'node:test';
+import { test, describe, beforeEach } from 'node:test';
 import assert from 'node:assert';
 import MarkdownIt from 'markdown-it';
 import frontMatter from 'markdown-it-front-matter';

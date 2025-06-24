@@ -1,7 +1,6 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import request from 'supertest';
-import { readFileSync } from 'node:fs';
 
 // Import the app
 import { app } from '../server.js';

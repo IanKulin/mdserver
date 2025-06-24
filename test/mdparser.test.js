@@ -80,7 +80,7 @@ describe('loadTemplate function', () => {
   afterEach(async () => {
     try {
       await fs.promises.rm(testTemplateDir, { recursive: true });
-    } catch (err) {
+    } catch {
       // Ignore cleanup errors
     }
   });

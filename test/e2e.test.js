@@ -79,41 +79,7 @@ describe('End-to-End Server Tests', () => {
   });
 
   test('should handle complex markdown features', async () => {
-    // Create a test by posting complex markdown content
-    const complexMarkdown = `---
-title: Complex Test
----
-
-# Complex Markdown Test
-
-## Features
-
-- **Bold text**
-- *Italic text*
-- \`inline code\`
-
-### Code Block
-
-\`\`\`javascript
-function test() {
-  return "hello world";
-}
-\`\`\`
-
-### Links
-
-[Test Link](https://example.com)
-
-### Nested Lists
-
-1. First item
-2. Second item
-   - Nested bullet
-   - Another nested
-3. Third item
-`;
-
-    // We'll test this by checking if our existing files handle similar complexity
+    // Test existing files handle various markdown complexity
     const response = await request(app)
       .get('/index.md')
       .expect(200);

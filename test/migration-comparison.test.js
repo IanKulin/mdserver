@@ -2,14 +2,6 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert';
 
 describe('Markdown-it Output Validation Tests', () => {
-  // Helper function to normalize HTML for comparison
-  function normalizeHtml(html) {
-    return html
-      .replace(/\s+/g, ' ')
-      .replace(/>\s+</g, '><')
-      .trim();
-  }
-
 
   // Test cases for common markdown patterns
   const testCases = [
