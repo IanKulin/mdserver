@@ -1,15 +1,5 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
-import { HtmlDiffer } from 'html-differ';
-
-const htmlDiffer = new HtmlDiffer({
-  ignoreAttributes: [],
-  compareAttributesAsJSON: [],
-  ignoreWhitespaces: true,
-  ignoreComments: true,
-  ignoreEndTags: false,
-  ignoreDuplicateAttributes: false
-});
 
 describe('Markdown-it Output Validation Tests', () => {
   // Helper function to normalize HTML for comparison
@@ -20,15 +10,6 @@ describe('Markdown-it Output Validation Tests', () => {
       .trim();
   }
 
-  // Helper function to compare HTML semantically
-  function compareHtml(html1, html2, testName) {
-    const isEqual = htmlDiffer.isEqual(html1, html2);
-    if (!isEqual) {
-      const diff = htmlDiffer.diffHtml(html1, html2);
-      console.log(`HTML differences in ${testName}:`, diff);
-    }
-    return isEqual;
-  }
 
   // Test cases for common markdown patterns
   const testCases = [

@@ -28,7 +28,10 @@ async function startServer() {
   }
 }
 
-startServer();
+// Only start server when running directly (not when imported)
+if (import.meta.url === `file://${process.argv[1]}`) {
+  startServer();
+}
 
 // Export app for testing
 export { app };

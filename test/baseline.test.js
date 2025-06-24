@@ -2,19 +2,9 @@ import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import request from 'supertest';
 import { readFileSync } from 'node:fs';
-import { HtmlDiffer } from 'html-differ';
 
 // Import the app
 import { app } from '../server.js';
-
-const htmlDiffer = new HtmlDiffer({
-  ignoreAttributes: [],
-  compareAttributesAsJSON: [],
-  ignoreWhitespaces: true,
-  ignoreComments: true,
-  ignoreEndTags: false,
-  ignoreDuplicateAttributes: false
-});
 
 describe('Current Markdown-it Output Tests', () => {
   // Test cases with various markdown features

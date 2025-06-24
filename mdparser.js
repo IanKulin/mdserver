@@ -113,4 +113,7 @@ async function loadTemplate() {
   }
 }
 
+// Initialize template loading on module import
+loadTemplate();
+
 export { mdParser, loadTemplate, publicDirectory };

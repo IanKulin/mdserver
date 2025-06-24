@@ -1,18 +1,8 @@
 import { test, describe } from 'node:test';
 import assert from 'node:assert';
 import request from 'supertest';
-import { HtmlDiffer } from 'html-differ';
 
 import { app } from '../server.js';
-
-const htmlDiffer = new HtmlDiffer({
-  ignoreAttributes: [],
-  compareAttributesAsJSON: [],
-  ignoreWhitespaces: true,
-  ignoreComments: true,
-  ignoreEndTags: false,
-  ignoreDuplicateAttributes: false
-});
 
 describe('End-to-End Server Tests', () => {
   test('should serve index.md with proper HTML structure', async () => {

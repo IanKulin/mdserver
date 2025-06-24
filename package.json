@@ -22,7 +22,6 @@
     "eslint": "^9.29.0",
     "eslint-config-prettier": "^10.1.5",
     "globals": "^16.2.0",
-    "html-differ": "^1.4.0",
     "prettier": "^3.5.3",
     "supertest": "^7.1.1"
   }
