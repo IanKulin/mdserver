@@ -57,6 +57,117 @@ title: Test Title
     assert.strictEqual(metadata.title, undefined);
   });
 
+  test('should handle malformed front-matter gracefully', () => {
+    const markdownWithMalformedMetadata = `---
+invalid yaml here
+no colon
+---
+# Content`;
+    
+    // Should not throw an error
+    const html = md.render(markdownWithMalformedMetadata);
+    const metadata = frontMatterData;
+    
+    assert(html.includes('<h1>Content</h1>'));
+    assert.strictEqual(metadata.title, undefined);
+  });
+
+  test('should handle front-matter with special characters', () => {
+    const markdownWithSpecialChars = `---
+title: Test Title with "quotes" and symbols: !@#$%
+author: John O'Connor & Jane Smith
+---
+# Content`;
+    
+    md.render(markdownWithSpecialChars);
+    const metadata = frontMatterData;
+    
+    assert.strictEqual(metadata.title, 'Test Title with "quotes" and symbols: !@#$%');
+    assert.strictEqual(metadata.author, "John O'Connor & Jane Smith");
+  });
+
+  test('should handle front-matter with empty values', () => {
+    const markdownWithEmptyValues = `---
+title: 
+description:
+author: Valid Author
+---
+# Content`;
+    
+    md.render(markdownWithEmptyValues);
+    const metadata = frontMatterData;
+    
+    // Parser captures empty string, not undefined for empty values
+    assert.strictEqual(metadata.title, ' ');
+    assert.strictEqual(metadata.description, undefined);
+    assert.strictEqual(metadata.author, 'Valid Author');
+  });
+
+  test('should handle front-matter with only whitespace values', () => {
+    const markdownWithWhitespace = `---
+title:    
+description:   
+author: Valid Author
+---
+# Content`;
+    
+    md.render(markdownWithWhitespace);
+    const metadata = frontMatterData;
+    
+    // Parser captures whitespace as value
+    assert.strictEqual(metadata.title, ' ');
+    assert.strictEqual(metadata.description, ' ');
+    assert.strictEqual(metadata.author, 'Valid Author');
+  });
+
+  test('should handle front-matter with no dashes', () => {
+    const markdownWithoutDashes = `title: This is not front-matter
+# This should be treated as content`;
+    
+    const html = md.render(markdownWithoutDashes);
+    const metadata = frontMatterData;
+    
+    // Should render as normal paragraph and header
+    assert(html.includes('<p>title: This is not front-matter</p>'));
+    assert(html.includes('<h1>This should be treated as content</h1>'));
+    assert.strictEqual(metadata.title, undefined);
+  });
+
+  test('should handle front-matter with numeric and boolean-like values', () => {
+    const markdownWithMixedTypes = `---
+title: Test Title
+version: 1.2.3
+published: true
+count: 42
+---
+# Content`;
+    
+    md.render(markdownWithMixedTypes);
+    const metadata = frontMatterData;
+    
+    assert.strictEqual(metadata.title, 'Test Title');
+    assert.strictEqual(metadata.version, '1.2.3');
+    assert.strictEqual(metadata.published, 'true');
+    assert.strictEqual(metadata.count, '42');
+  });
+
+  test('should handle front-matter with extra spaces around colons', () => {
+    const markdownWithSpaces = `---
+title   :   Spaced Title
+author:No Space Author
+description  :  Multiple   Spaces   Here
+---
+# Content`;
+    
+    md.render(markdownWithSpaces);
+    const metadata = frontMatterData;
+    
+    // The regex only matches \w+:\s+ pattern, so spaces before colon break the match
+    assert.strictEqual(metadata.title, undefined); // Doesn't match due to spaces before colon
+    assert.strictEqual(metadata.author, 'No Space Author');
+    assert.strictEqual(metadata.description, undefined); // Also doesn't match due to spaces before colon
+  });
+
   test('should process complex markdown features', () => {
     const markdown = `# Main Title
 
