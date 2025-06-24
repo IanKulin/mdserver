@@ -88,6 +88,78 @@ describe('End-to-End Server Tests', () => {
     assert.ok(response.text.includes('<h1'), 'Should handle headers');
     assert.ok(response.text.includes('<ul>') || response.text.includes('<ol>'), 'Should handle lists');
   });
+
+  test('should return 413 for files larger than 1MB', async () => {
+    const fs = await import('fs');
+    const path = await import('path');
+    const { fileURLToPath } = await import('url');
+    
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const testFilePath = path.join(__dirname, '..', 'public', 'large-test.md');
+    
+    // Create a file larger than 1MB (1024 * 1024 bytes)
+    const largeContent = '# Large File\n' + 'x'.repeat(1024 * 1024 + 1);
+    
+    try {
+      await fs.promises.writeFile(testFilePath, largeContent);
+      
+      await request(app)
+        .get('/large-test.md')
+        .expect(413)
+        .expect('File too large');
+    } finally {
+      // Clean up the test file
+      try {
+        await fs.promises.unlink(testFilePath);
+      } catch {
+        // Ignore cleanup errors
+      }
+    }
+  });
+
+  test('should serve welcome page when index.md is missing', async () => {
+    const fs = await import('fs');
+    const path = await import('path');
+    const { fileURLToPath } = await import('url');
+    
+    const __dirname = path.dirname(fileURLToPath(import.meta.url));
+    const indexPath = path.join(__dirname, '..', 'public', 'index.md');
+    const backupPath = path.join(__dirname, '..', 'public', 'index.md.backup');
+    
+    let indexExists = false;
+    
+    try {
+      // Check if index.md exists and back it up
+      await fs.promises.access(indexPath);
+      await fs.promises.rename(indexPath, backupPath);
+      indexExists = true;
+    } catch {
+      // index.md doesn't exist, which is what we want for this test
+    }
+    
+    try {
+      const response = await request(app)
+        .get('/index.md')
+        .expect(200)
+        .expect('Content-Type', /text\/html/);
+      
+      // Check for welcome page content
+      assert.ok(response.text.includes('mdserver - welcome'), 'Should have welcome page title');
+      assert.ok(response.text.includes('You\'ve successfully installed'), 'Should have welcome message');
+      assert.ok(response.text.includes('create a <code>public</code> directory'), 'Should have instructions');
+      assert.ok(response.text.includes('GitHub page'), 'Should have GitHub link');
+      assert.ok(response.text.includes('template.html'), 'Should mention template');
+    } finally {
+      // Restore index.md if it existed
+      if (indexExists) {
+        try {
+          await fs.promises.rename(backupPath, indexPath);
+        } catch {
+          // Ignore restore errors
+        }
+      }
+    }
+  });
 });
 
 describe('Response Performance and Structure', () => {
