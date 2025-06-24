@@ -18,9 +18,5 @@ fi
 # Bootstrap the builder (ensures it's ready for multi-platform builds)
 docker buildx inspect --bootstrap
 
-echo "Building images for platforms: linux/arm64,linux/amd64"
-echo "Version: $VERSION"
-docker buildx build --platform linux/arm64,linux/amd64 -t iankulin/mdserver:$VERSION -t iankulin/mdserver:latest .
-
-echo "Build completed successfully!"
-echo "To push the images, run: ./docker-push.sh"
+echo docker buildx build --push --platform linux/arm64,linux/amd64 -t iankulin/mdserver:$VERSION -t iankulin/mdserver:latest .
+docker buildx build --push --platform linux/arm64,linux/amd64 -t iankulin/mdserver:$VERSION -t iankulin/mdserver:latest .
