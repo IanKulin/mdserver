@@ -38,7 +38,8 @@ The metadata included in the markdown like this is removed before the conversion
 
 0.2.3 - +ESM, security fixes, eslint  
 0.3.0 - Migrated from Showdown to markdown-it for markdown translation
-0.3.1 - remove 'diff' package that had CVE 
+0.3.1 - remove 'diff' package that had CVE
+0.3.2 - update for CVE-2025-7783 in form-data 
 
 ## Similar projects
 
@@ -47,5 +48,4 @@ If you are looking for something more powerful that serves up markdown but has a
 And of course, the performant way to serve markdown as html is a static site generator, of which there are [many](https://github.com/myles/awesome-static-generators).
 
 ## Build
-
-
+- `./docker-build.sh`
