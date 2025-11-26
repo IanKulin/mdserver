@@ -40,6 +40,7 @@ The metadata included in the markdown like this is removed before the conversion
 0.3.0 - Migrated from Showdown to markdown-it for markdown translation  
 0.3.1 - remove 'diff' package that had CVE  
 0.3.2 - update for CVE-2025-7783 in form-data 
+0.3.3 - update for CVE-2025-64718 in js-yaml
 
 ## Similar projects
 
