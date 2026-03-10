@@ -43,6 +43,7 @@ The metadata included in the markdown like this is removed before the conversion
 * 0.3.3 - update for CVE-2025-64718 in js-yaml
 * 0.3.4 - update for CVE-2025-15284 in qs
 * 0.3.5 - update for CVE-2026-2327 in markdown-it & CVE-2026-2391 in qs
+* 0.3.6 - update for CVEs 2026-26996 2026-27904 2026-27903
 
 ## Similar projects
 
